@@ -1,0 +1,47 @@
+# config context path to "/" by setting an empty string
+server:
+  contextPath:
+
+jwt:
+  header: Authorization
+  secret: mySecretKey12
+  expiration: 604800
+  route:
+    authentication:
+      path: auth
+      refresh: refresh
+
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: POSTGRESQL
+    #show-sql: false production
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+  datasource:
+    driverClassName: org.postgresql.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://localhost:5435/blog
+    username: postgres
+    password: postgres #localhost
+  main:
+   allow-circular-references: true
+
+logging:
+  level:
+    org:
+      hr:
+        Aspects: DEBUG
+        rest: DEBUG
+        security: INFO
+        services:
+          serviceImpl: DEBUG
+
+
