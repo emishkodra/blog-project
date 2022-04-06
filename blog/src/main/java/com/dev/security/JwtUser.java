@@ -2,10 +2,10 @@ package com.dev.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Date;
 
 
 public class JwtUser implements UserDetails {
@@ -31,18 +31,9 @@ public class JwtUser implements UserDetails {
         this.authorities = authorities;
     }
 
-    public JwtUser(
-            Long id,
-            String username,
-            String password,
-            Collection<? extends GrantedAuthority> authorities,
-            boolean enabled
-    ) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.authorities = authorities;
-        this.enabled = enabled;
+    public static Long getCurrentId() {
+        JwtUser loginUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return loginUser.getId();
     }
 
     @Override
