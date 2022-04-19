@@ -11,13 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/api/auth")
 public class UserController {
 
     @Autowired
@@ -31,8 +31,8 @@ public class UserController {
     @Autowired
     private RoleDAO roleDao;
 
-    @GetMapping(value = "/user/all")
-    public ResponseEntity<List<UserDTO>> allActiveUsers(@PathVariable Long userId) {
+    @GetMapping(value = "/users/all")
+    public ResponseEntity<List<UserDTO>> allActiveUsers() {
         List<UserDTO> response = null;
         try {
             response = userService.userActiveListDetails();
@@ -43,7 +43,7 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/user/getUserId")
+    @PostMapping("/users/getUserId")
     public ResponseEntity<Integer> getUserId(@RequestBody String token) {
         Integer response = null;
         try {
@@ -55,7 +55,7 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/user/getUser")
+    @PostMapping("/users/getUser")
     public ResponseEntity<User> getUser(@RequestBody Long id) {
         User response = null;
         try {
@@ -67,8 +67,8 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/user/delete")
-    public ResponseEntity<Boolean> deleteEmployee(@RequestBody UserDTO userDTO) {
+    @PostMapping("/users/delete")
+    public ResponseEntity<Boolean> deleteUser(@RequestBody UserDTO userDTO) {
         Boolean response = Boolean.FALSE;
         try {
             if (userDTO != null) {
@@ -76,43 +76,6 @@ public class UserController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return ResponseEntity.ok().body(response);
-    }
-
-    @PostMapping("/users/adduser")
-    public ResponseEntity<User> saveUser(@RequestBody UserDTO userDto, String role) {
-        User response = new User();
-        try {
-//            if (user != null && user.getUsername().getId() > 0) {
-
-//                User u = userService.getUserById(user.getUsername().getId());
-
-                User user = new User();
-//                if (u != null) {
-                    user.setUsername(userDto.getUsername());
-                    user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-                    user.setUsername(userDto.getUsername());
-                    user.setEnabled(true);
-                    Role roleUser = null;
-
-                    if (role != null) {
-                        roleUser = this.roleDao.findByRoleName(role);
-                    } else {
-                        roleUser = this.roleDao.findByRoleName("ROLE_USER");
-                    }
-
-                    List<Role> authorities = new ArrayList<>();
-                    if (roleUser != null)
-                        authorities.add(roleUser);
-
-                    user.setAuthorities(authorities);
-                    response = userDao.save(user);
-//                }
-//            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok().body(response);

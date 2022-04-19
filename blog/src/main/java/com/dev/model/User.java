@@ -18,9 +18,7 @@ public class User {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String username;
-
     private String password;
     @JsonIgnore
     private String email;
@@ -34,6 +32,10 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")})
 
     private List<Role> authorities;
+
+    public User(){
+
+    }
 
     @Override
     public String toString() {

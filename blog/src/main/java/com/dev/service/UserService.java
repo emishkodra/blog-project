@@ -2,6 +2,7 @@ package com.dev.service;
 
 import com.dev.dto.UserDTO;
 import com.dev.model.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 

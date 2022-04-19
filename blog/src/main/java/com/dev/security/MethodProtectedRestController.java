@@ -17,7 +17,7 @@ public class MethodProtectedRestController {
     public Boolean user = false;
 
     @RequestMapping(method = RequestMethod.GET)
-    public Collection<SimpleGrantedAuthority> hasRol() {
+    public Collection<SimpleGrantedAuthority> hasRole() {
         Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         return authorities;
     }

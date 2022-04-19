@@ -1,7 +1,9 @@
 package com.dev.service;
 
+import com.dev.dao.RoleDAO;
 import com.dev.dto.LoginRequestDTO;
 import com.dev.dto.RegisterRequestDTO;
+import com.dev.model.Role;
 import com.dev.model.User;
 import com.dev.repository.UserRepository;
 import com.dev.security.*;
@@ -17,14 +19,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AuthService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private  RoleDAO roleDao;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -38,13 +41,29 @@ public class AuthService {
 
     @Autowired
     private MethodProtectedRestController methodProtectedRestController;
+
     // registration handler
-    public void signup(RegisterRequestDTO registerRequest) {
+    public void signup(RegisterRequestDTO registerRequest, String role) {
+
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setEmail(registerRequest.getEmail());
-        user.setEnabled(true);
         user.setPassword(encodePassword(registerRequest.getPassword()));
+        user.setUsername(registerRequest.getUsername());
+        user.setEnabled(true);
+        Role roleUser = null;
+
+        if (role != null) {
+            roleUser = this.roleDao.findByRoleName(role);
+        } else {
+            roleUser = this.roleDao.findByRoleName("ROLE_USER");
+        }
+
+        List<Role> authorities = new ArrayList<>();
+        if (roleUser != null)
+            authorities.add(roleUser);
+
+        user.setAuthorities(authorities);
         userRepository.save(user);
     }
 
@@ -52,7 +71,7 @@ public class AuthService {
         return passwordEncoder.encode(password); // encrypted password
     }
 
-    public ResponseEntity<?>  login(LoginRequestDTO loginRequest) throws Exception{
+    public ResponseEntity<?> login(LoginRequestDTO loginRequest) throws Exception{
 
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -65,7 +84,7 @@ public class AuthService {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
         if (userDetails != null) {
             final String token = jwtTokenUtil.generateToken(userDetails);
-            final Collection<SimpleGrantedAuthority> roles_array = methodProtectedRestController.hasRol();
+            final Collection<SimpleGrantedAuthority> roles_array = methodProtectedRestController.hasRole();
             final String userId = jwtTokenUtil.getUserId();
             return ResponseEntity.ok(new JwtAuthenticationResponse(token, roles_array, userId));
         } else {

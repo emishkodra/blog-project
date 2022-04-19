@@ -1,5 +1,7 @@
 package com.dev.security;
 
+import com.dev.model.User;
+import com.dev.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -42,6 +44,7 @@ public class JwtTokenUtil implements Serializable {
 
     @Autowired
     UserDetailsService userDetailsService;
+    private UserService userService;
     public String access_number;
     public String userId;
 
