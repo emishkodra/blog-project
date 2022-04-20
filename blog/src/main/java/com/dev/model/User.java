@@ -3,6 +3,7 @@ package com.dev.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,7 +13,7 @@ import java.util.List;
 @Table(name = "USERS")
 @Getter
 @Setter
-
+@Where(clause = "enabled is not false")
 public class User {
     @Id
     @Column(name = "id")

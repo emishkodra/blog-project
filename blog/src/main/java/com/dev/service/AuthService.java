@@ -27,7 +27,7 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private  RoleDAO roleDao;
+    private RoleDAO roleDao;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -43,7 +43,7 @@ public class AuthService {
     private MethodProtectedRestController methodProtectedRestController;
 
     // registration handler
-    public void signup(RegisterRequestDTO registerRequest, String role) {
+    public void signup(RegisterRequestDTO registerRequest) {
 
         User user = new User();
         user.setUsername(registerRequest.getUsername());
@@ -51,13 +51,7 @@ public class AuthService {
         user.setPassword(encodePassword(registerRequest.getPassword()));
         user.setUsername(registerRequest.getUsername());
         user.setEnabled(true);
-        Role roleUser = null;
-
-        if (role != null) {
-            roleUser = this.roleDao.findByRoleName(role);
-        } else {
-            roleUser = this.roleDao.findByRoleName("ROLE_USER");
-        }
+        Role roleUser = this.roleDao.findByRoleName("ROLE_USER");
 
         List<Role> authorities = new ArrayList<>();
         if (roleUser != null)
@@ -71,7 +65,7 @@ public class AuthService {
         return passwordEncoder.encode(password); // encrypted password
     }
 
-    public ResponseEntity<?> login(LoginRequestDTO loginRequest) throws Exception{
+    public ResponseEntity<?> login(LoginRequestDTO loginRequest) throws Exception {
 
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -96,8 +90,8 @@ public class AuthService {
         // returning user from security context
         org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext()
-                                     .getAuthentication()
-                                     .getPrincipal();
+                        .getAuthentication()
+                        .getPrincipal();
         return Optional.of(principal); // store it inside a variable ==> return it back as optional
     }
 }

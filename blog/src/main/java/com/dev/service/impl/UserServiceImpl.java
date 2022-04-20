@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
         List<User> userList = null;
         List<UserDTO> userListDTO = new ArrayList<>();
         try {
-            userList = userDao.findAllActiveUsers(JwtUser.getCurrentId());
+            userList = userDao.findAllByOrderByIdDesc();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,6 +1,8 @@
 package com.dev.security;
 
+import com.dev.dao.UserDAO;
 import com.dev.model.User;
+import com.dev.repository.UserRepository;
 import com.dev.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -17,7 +19,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.security.core.userdetails.UserDetailsService;
+
 @Component
 public class JwtTokenUtil implements Serializable {
 
@@ -28,11 +32,6 @@ public class JwtTokenUtil implements Serializable {
     static final String CLAIM_KEY_AUDIENCE = "audience";
     static final String CLAIM_KEY_CREATED = "created";
     static final String CLAIM_KEY_ID = "id";
-    static final String CLAIM_KEY_ACCESS_NUMBER = "access_number";
-    static final String CLAIM_KEY_COMPANY_ID = "company_id";
-
-    private static final String AUDIENCE_UNKNOWN = "unknown";
-    private static final String AUDIENCE_WEB = "web";
     private static final String AUDIENCE_MOBILE = "mobile";
     private static final String AUDIENCE_TABLET = "tablet";
 
@@ -44,8 +43,10 @@ public class JwtTokenUtil implements Serializable {
 
     @Autowired
     UserDetailsService userDetailsService;
-    private UserService userService;
-    public String access_number;
+
+    @Autowired
+    UserRepository userRepository;
+
     public String userId;
 
     public String getUsernameFromToken(String token) {
@@ -72,16 +73,6 @@ public class JwtTokenUtil implements Serializable {
         return id;
     }
 
-    public Object getAccessFromToken(String token) {
-        Object access;
-        try {
-            final Claims claims = getClaimsFromToken(token);
-            access = claims.get(CLAIM_KEY_ACCESS_NUMBER);
-        } catch (Exception e) {
-            access = null;
-        }
-        return access;
-    }
 
     public Date getCreatedDateFromToken(String token) {
         Date created;
@@ -151,11 +142,11 @@ public class JwtTokenUtil implements Serializable {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         try {
+            userId = userRepository.findByUsername(userDetails.getUsername()).getId().toString();
             claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
             claims.put(CLAIM_KEY_AUDIENCE, "web");
             claims.put(CLAIM_KEY_CREATED, new Date());
-            claims.put(CLAIM_KEY_ID, userDetails.getUsername());
-            claims.put(CLAIM_KEY_ACCESS_NUMBER, access_number);
+            claims.put(CLAIM_KEY_ID, userId);
 
         } catch (Exception e) {
             log.debug(e.getMessage());
@@ -164,9 +155,6 @@ public class JwtTokenUtil implements Serializable {
         return generateToken(claims);
     }
 
-    public String getAccessnumber() {
-        return access_number;
-    }
 
     public String getUserId() {
         return userId;
@@ -176,7 +164,7 @@ public class JwtTokenUtil implements Serializable {
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate())
-                .signWith(SignatureAlgorithm.HS512 , secret)
+                .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
 

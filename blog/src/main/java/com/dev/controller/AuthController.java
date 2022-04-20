@@ -27,14 +27,14 @@ public class AuthController { //method that will be invoked whenever a POST requ
     private UserRepository userRepository;
 
     @PostMapping("/signup")
-    public ResponseEntity signup(@RequestBody RegisterRequestDTO registerRequest, String role) { //accessing DTO
+    public ResponseEntity signup(@RequestBody RegisterRequestDTO registerRequest) { //accessing DTO
         if(userRepository.existsByUsername(registerRequest.getUsername())) {
             return new ResponseEntity<>("Username already taken", HttpStatus.BAD_REQUEST);
         }
         if(userRepository.existsByEmail(registerRequest.getEmail())) {
             return new ResponseEntity<>("Email already taken", HttpStatus.BAD_REQUEST);
         }
-        authService.signup(registerRequest, role);
+        authService.signup(registerRequest);
         return new ResponseEntity("User registered successfully", HttpStatus.OK);
     }
 
