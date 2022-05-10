@@ -51,13 +51,13 @@ public class AuthService {
         user.setPassword(encodePassword(registerRequest.getPassword()));
         user.setUsername(registerRequest.getUsername());
         user.setEnabled(true);
-        Role roleUser = this.roleDao.findByRoleName("ROLE_USER");
-
-        List<Role> authorities = new ArrayList<>();
-        if (roleUser != null)
-            authorities.add(roleUser);
-
-        user.setAuthorities(authorities);
+//        Role roleUser = this.roleDao.findByRoleName("ROLE_USER");
+//
+//        List<Role> authorities = new ArrayList<>();
+//        if (roleUser != null)
+//            authorities.add(roleUser);
+//
+//        user.setAuthorities(authorities);
         userRepository.save(user);
     }
 

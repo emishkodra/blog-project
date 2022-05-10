@@ -1,9 +1,19 @@
 package com.dev.dto;
 
 public class UserDTO {
+    private Long id;
     private String username;
     private String password;
     private String email;
+    private String authorities;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -27,5 +37,13 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(String authorities) {
+        this.authorities = authorities;
     }
 }

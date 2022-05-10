@@ -3,8 +3,8 @@ package com.dev.controller;
 import com.dev.dao.RoleDAO;
 import com.dev.dao.UserDAO;
 import com.dev.dto.UserDTO;
-import com.dev.model.Role;
 import com.dev.model.User;
+import com.dev.repository.UserRepository;
 import com.dev.security.JwtTokenUtil;
 import com.dev.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -30,6 +29,8 @@ public class UserController {
     private UserDAO userDao;
     @Autowired
     private RoleDAO roleDao;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping(value = "/users/all")
     public ResponseEntity<List<UserDTO>> allActiveUsers() {
@@ -67,7 +68,40 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/users/delete")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PutMapping("/users/updateUser/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO){
+        User response;
+        try {
+            if (userDTO == null && id == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                response = userService.userUpdate(userDTO, id);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/users/changePassword/{id}")
+    public ResponseEntity<User> changePassword(@PathVariable Long id, @RequestParam String newPassword){
+        User response;
+        try {
+            if (id == null){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                response = userService.changePassword(id, newPassword);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.ok().body(response);
+    }
+
+    @DeleteMapping("/users/delete")
     public ResponseEntity<Boolean> deleteUser(@RequestBody UserDTO userDTO) {
         Boolean response = Boolean.FALSE;
         try {
