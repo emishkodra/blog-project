@@ -47,16 +47,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(Long id) throws Exception {
-        try {
-            Optional<User> user = userDao.findById(id);
-            return user.orElse(null);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-    }
-
-    @Override
     public User userUpdate(UserDTO userDTO, Long id) throws Exception {
 
         User updatedUser = null;

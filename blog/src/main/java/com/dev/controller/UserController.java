@@ -32,30 +32,6 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/users/getUserId")
-    public ResponseEntity<Integer> getUserId(@RequestBody String token) {
-        Integer response = null;
-        try {
-            response = (Integer) jwtUtil.getIdFromToken(token);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return ResponseEntity.ok().body(response);
-    }
-
-    @PostMapping("/users/getUser")
-    public ResponseEntity<User> getUser(@RequestBody Long id) {
-        User response = null;
-        try {
-            response = userService.getUserById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return ResponseEntity.ok().body(response);
-    }
-
     //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/users/updateUser/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {

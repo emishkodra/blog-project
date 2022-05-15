@@ -9,8 +9,6 @@ public interface UserService {
 
     List<UserDTO> userActiveListDetails() throws Exception;
 
-    User getUserById(Long id) throws Exception;
-
     User userUpdate(UserDTO userDTO, Long id) throws Exception;
 
     User changePassword(Long id, String newPassword) throws Exception;

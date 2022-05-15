@@ -60,20 +60,6 @@ public class JwtTokenUtil implements Serializable {
         return username;
     }
 
-    public Object getIdFromToken(String token) throws Exception {
-        log.debug("Request to get employee id from token: {}", token);
-        Object id = null;
-        try {
-            final Claims claims = getClaimsFromToken(token);
-            id = claims.get(CLAIM_KEY_ID);
-        } catch (Exception e) {
-            log.debug(e.getMessage());
-            throw new Exception(e.getMessage());
-        }
-        return id;
-    }
-
-
     public Date getCreatedDateFromToken(String token) {
         Date created;
         try {
