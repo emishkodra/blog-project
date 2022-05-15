@@ -22,8 +22,6 @@ public class AuthController { //method that will be invoked whenever a POST requ
     @Autowired
     private AuthService authService;
     @Autowired
-    private UserService userService;
-    @Autowired
     private UserRepository userRepository;
 
     @PostMapping("/signup")
@@ -43,7 +41,6 @@ public class AuthController { //method that will be invoked whenever a POST requ
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginRequest)  throws Exception{
         try {
             return authService.login(loginRequest); // return to client
-
         }catch (Exception e){
             throw new Exception(e);
         }

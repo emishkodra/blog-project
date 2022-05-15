@@ -1,9 +1,7 @@
 package com.dev.service;
 
-import com.dev.dao.RoleDAO;
 import com.dev.dto.LoginRequestDTO;
 import com.dev.dto.RegisterRequestDTO;
-import com.dev.model.Role;
 import com.dev.model.User;
 import com.dev.repository.UserRepository;
 import com.dev.security.*;
@@ -27,18 +25,13 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private RoleDAO roleDao;
-    @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AuthenticationManager authenticationManager;
-
     @Autowired
     private JwtUserDetailsServiceImpl userDetailsService;
-
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
-
     @Autowired
     private MethodProtectedRestController methodProtectedRestController;
 
@@ -51,13 +44,7 @@ public class AuthService {
         user.setPassword(encodePassword(registerRequest.getPassword()));
         user.setUsername(registerRequest.getUsername());
         user.setEnabled(true);
-//        Role roleUser = this.roleDao.findByRoleName("ROLE_USER");
-//
-//        List<Role> authorities = new ArrayList<>();
-//        if (roleUser != null)
-//            authorities.add(roleUser);
-//
-//        user.setAuthorities(authorities);
+
         userRepository.save(user);
     }
 
