@@ -95,24 +95,41 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User changePassword(Long id, String newPassword) throws Exception {
+        User updatedPassword = null;
         try {
-            User updatedPassword = null;
-            Optional<User> user = userDao.findById(id);
+            if (id != null || id > 0) {
+                Optional<User> user = userDao.findById(id);
 
-            if (user.isPresent()){
-                User usr = user.get();
-                usr.setPassword(passwordEncoder.encode(newPassword));
-                updatedPassword = userDao.save(usr);
+                if (user.isPresent()){
+                    User newPass = user.get();
+                    newPass.setPassword(passwordEncoder.encode(newPassword));
+                    updatedPassword = userDao.save(newPass);
+                }
             }
-            return updatedPassword;
         } catch (Exception e) {
             throw new Exception(e);
         }
+        return updatedPassword;
     }
 
     @Override
-    public Boolean deleteUserActiveDetails(UserDTO userDTO) throws Exception {
-        return null;
+    public Boolean deleteUsers(Long id) throws Exception {
+        try {
+            if (id != null){
+                Optional<User> user = userDao.findById(id);
+
+                if (user.isPresent()) {
+                    User usr = user.get();
+                    usr.setEnabled(false);
+                    userDao.delete(usr);
+                    return true;
+                }
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
     }
 
     @Override
