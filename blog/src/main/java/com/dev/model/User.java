@@ -20,8 +20,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
-    private String password;
     @JsonIgnore
+    private String password;
     private String email;
     @NotNull
     private Boolean enabled;

@@ -17,5 +17,7 @@ public interface UserDAO extends SoftDeleteRepository<User, Long> {
 
     List<User> findAllByOrderByIdDesc();
 
+    User findByUsername (String username);
+
 
 }

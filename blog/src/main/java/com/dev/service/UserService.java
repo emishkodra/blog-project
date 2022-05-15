@@ -15,7 +15,7 @@ public interface UserService {
 
     User changePassword(Long id, String newPassword) throws Exception;
 
-    Boolean deleteUserActiveDetails(UserDTO userDTO) throws Exception;
+    Boolean deleteUsers(Long id) throws Exception;
 
     List<String> getUserActiveRoles() throws Exception;
 }

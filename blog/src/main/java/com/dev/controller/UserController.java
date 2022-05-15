@@ -10,6 +10,7 @@ import com.dev.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,14 +24,6 @@ public class UserController {
     private UserService userService;
     @Autowired
     private JwtTokenUtil jwtUtil;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private UserDAO userDao;
-    @Autowired
-    private RoleDAO roleDao;
-    @Autowired
-    private UserRepository userRepository;
 
     @GetMapping(value = "/users/all")
     public ResponseEntity<List<UserDTO>> allActiveUsers() {
@@ -68,9 +61,9 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/users/updateUser/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO){
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         User response;
         try {
             if (userDTO == null && id == null) {
@@ -86,33 +79,37 @@ public class UserController {
     }
 
     @PostMapping("/users/changePassword/{id}")
-    public ResponseEntity<User> changePassword(@PathVariable Long id, @RequestParam String newPassword){
-        User response;
+    public ResponseEntity<?> changePassword(@PathVariable Long id, @RequestBody String newPassword) {
         try {
-            if (id == null){
+            if (id == null || id == 0) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
-                response = userService.changePassword(id, newPassword);
+               userService.changePassword(id, newPassword);
             }
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return ResponseEntity.ok().body(response);
+        return new ResponseEntity<>("Password successfully changed", HttpStatus.OK);
     }
 
-    @DeleteMapping("/users/delete")
-    public ResponseEntity<Boolean> deleteUser(@RequestBody UserDTO userDTO) {
-        Boolean response = Boolean.FALSE;
+    //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @DeleteMapping("/users/delete/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
-            if (userDTO != null) {
-                response = userService.deleteUserActiveDetails(userDTO);
+            if (id == null || id == 0) {
+                return new ResponseEntity<>("User ID not found", HttpStatus.BAD_REQUEST);
+            }
+            Boolean isDeleted = userService.deleteUsers(id);
+            if (isDeleted) {
+                return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("User has already been deleted or User ID not found", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/users/role")
@@ -128,6 +125,4 @@ public class UserController {
         }
         return ResponseEntity.ok().body(response);
     }
-
-
 }
