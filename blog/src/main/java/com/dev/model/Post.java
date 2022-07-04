@@ -8,6 +8,8 @@ import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
 
+import static com.dev.util.AppConstants.LIKE_NUMBER_0;
+
 
 @Entity
 @Table(name = "POST")
@@ -23,7 +25,7 @@ public class Post {
     private String title;
     private String content;
     private Instant createdOn;
-    private Long likes;
+    private Long likes = LIKE_NUMBER_0;
 
     @NotNull
     private Boolean status = true;

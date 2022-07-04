@@ -13,7 +13,7 @@ public interface PostService {
 
     List<PostDTO> getAllPosts();
 
-    void createNewPost(PostDTO postDTO, MultipartFile[] files) throws IOException;
+    PostDTO createNewPost(PostDTO postDTO);
 
     List<PostDTO> getPostForUserId(Long id);
 

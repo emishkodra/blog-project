@@ -16,8 +16,9 @@ public class PostDTO {
     private Long id;
     @NotNull
     private String content;
+    @NotNull
     private String title;
-    private Instant createdOn;
+    private Instant createdOn = Instant.now();
 
     @NotNull
     private UserDTO userDTO;

@@ -3,6 +3,7 @@ package com.dev.controller;
 import com.dev.dao.UserDAO;
 import com.dev.dto.PostDTO;
 import com.dev.model.Post;
+import com.dev.model.User;
 import com.dev.service.PostService;
 import com.dev.service.UserService;
 import com.dev.util.error.BadRequestAlertException;
@@ -65,14 +66,15 @@ public class PostController {
     }
 
     @PostMapping(value = "/posts/newPost")
-    public ResponseEntity newPost(@Valid @RequestBody PostDTO postDTO, MultipartFile[] files) throws IOException {
+    public ResponseEntity<PostDTO> newPost(@Valid @RequestBody PostDTO postDTO){
 
 //        for (MultipartFile multipartFile : files) {
 //            if (!ALLOWED_FILE_TYPES_ARRAY.contains(Objects.requireNonNull(FilenameUtils.getExtension(multipartFile.getOriginalFilename())))) {
 //                throw new BadRequestAlertException(ALLOWED_FILE_TYPES_ERROR_MESSAGE, ENTITY_NAME, ALLOWED_FILE_TYPES_ERROR_KEY);
 //            }
 //        }
-        postService.createNewPost(postDTO, files);
+
+        postService.createNewPost(postDTO);
 
         return ResponseEntity.ok()
                     .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, postDTO.toString()))
