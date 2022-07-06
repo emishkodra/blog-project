@@ -20,20 +20,20 @@ POST localhost:8080/api/auth/users/changePassword/{id}
 
 DELETE localhost:8080/api/auth/users/delete/{id}
 
-GET http://localhost:8080/api/auth/users/{id}
+GET localhost:8080/api/auth/users/{id}
 
 Posts:
 
-DELETE http://localhost:8080/api/auth/users/delete
+DELETE localhost:8080/api/auth/users/delete
 
-POST http://localhost:8080/api/auth/posts/newPost
+POST localhost:8080/api/auth/posts/newPost
 
-DELETE http://localhost:8080/api/auth/posts/delete/{postId}
+DELETE localhost:8080/api/auth/posts/delete/{postId}
 
-POST http://localhost:8080/api/auth/posts/newPost
+POST localhost:8080/api/auth/posts/newPost
 
-GET http://localhost:8080/api/auth/users/{id}
+GET localhost:8080/api/auth/users/{id}
 
-DELETE http://localhost:8081/api/users/{id}
+DELETE localhost:8081/api/users/{id}
 
-POST http://localhost:8080/api/auth/posts/newPost
+POST localhost:8080/api/auth/posts/newPost
