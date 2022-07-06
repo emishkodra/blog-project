@@ -3,17 +3,25 @@ package com.dev.service.impl;
 import com.dev.dao.RoleDAO;
 import com.dev.dao.UserDAO;
 import com.dev.dto.UserDTO;
+import com.dev.mapper.RoleMapper;
+import com.dev.mapper.UserMapper;
 import com.dev.model.Role;
 import com.dev.model.User;
 import com.dev.service.UserService;
+import com.dev.util.error.BadRequestAlertException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.dev.util.error.ErrorConstants.NOT_FOUND_KEY;
+import static com.dev.util.error.ErrorConstants.USER_NOT_FOUND_MESSAGE;
+import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,26 +32,26 @@ public class UserServiceImpl implements UserService {
     private RoleDAO roleDao;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
-    public List<UserDTO> userActiveListDetails() throws Exception {
-        List<User> userList = null;
-        List<UserDTO> userListDTO = new ArrayList<>();
-        try {
-            userList = userDao.findAllByOrderByIdDesc();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public List<UserDTO> userActiveListDetails(){
+        return userDao.findAllByOrderByIdDesc().stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    @Override
+    public Optional<UserDTO> getUserWithId(Long id){
+        Optional<UserDTO> user = userDao.findById(id)
+                .map(userMapper::toDto);
+
+        if (user.isPresent()){
+            return user;
+        } else {
+            throw new BadRequestAlertException(USER_NOT_FOUND_MESSAGE, ENTITY_NAME, NOT_FOUND_KEY);
         }
-        if(userList != null) {
-            for(User user : userList) {
-                UserDTO userDTO = new UserDTO();
-                userDTO.setId(user.getId());
-                userDTO.setUsername(user.getUsername());
-                userDTO.setEmail(user.getEmail());
-                userListDTO.add(userDTO);
-            }
-        }
-        return userListDTO;
     }
 
     @Override
@@ -103,9 +111,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean deleteUsers(Long id) throws Exception {
-        try {
-            if (id != null){
+    public Boolean deleteUsers(Long id){
+            if (id != null) {
                 Optional<User> user = userDao.findById(id);
 
                 if (user.isPresent()) {
@@ -115,21 +122,13 @@ public class UserServiceImpl implements UserService {
                     return true;
                 }
             }
-        }catch (Exception e) {
-            e.printStackTrace();
             return false;
-        }
-        return false;
     }
 
     @Override
-    public List<String> getUserActiveRoles() throws Exception {
-        List<String> roleTypes = null;
-        try {
-            roleTypes = roleDao.findAll().stream().map(Role::getName).collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-        return roleTypes;
+    public List<String> getUserActiveRoles() {
+        return roleDao.findAll().stream()
+                .map(Role::getName)
+                .collect(Collectors.toList());
     }
 }

@@ -1,9 +1,12 @@
 package com.dev.controller;
 
+import com.dev.dto.PostDTO;
 import com.dev.dto.UserDTO;
 import com.dev.model.User;
 import com.dev.security.JwtTokenUtil;
 import com.dev.service.UserService;
+import com.dev.util.error.BadRequestAlertException;
+import com.dev.util.error.HeaderUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,10 +14,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+
+import static com.dev.util.error.ErrorConstants.*;
 
 @RestController
 @RequestMapping("/api/auth")
 public class UserController {
+
+    private static final String ENTITY_NAME = "user";
 
     @Autowired
     private UserService userService;
@@ -22,15 +30,8 @@ public class UserController {
     private JwtTokenUtil jwtUtil;
 
     @GetMapping(value = "/users/all")
-    public ResponseEntity<List<UserDTO>> allActiveUsers() {
-        List<UserDTO> response = null;
-        try {
-            response = userService.userActiveListDetails();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return ResponseEntity.ok().body(response);
+    public List<UserDTO> allActiveUsers() {
+        return userService.userActiveListDetails();
     }
 
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -68,19 +69,17 @@ public class UserController {
     //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/users/delete/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        try {
-            if (id == null || id == 0) {
-                return new ResponseEntity<>("User ID not found", HttpStatus.BAD_REQUEST);
-            }
-            Boolean isDeleted = userService.deleteUsers(id);
-            if (isDeleted) {
-                return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("User has already been deleted or User ID not found", HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        if (id == null || id == 0) {
+            throw new BadRequestAlertException(ID_NOT_FOUND_MESSAGE, ENTITY_NAME, BAD_REQUEST_KEY);
+        }
+        Boolean isDeleted = userService.deleteUsers(id);
+
+        if (isDeleted) {
+            return ResponseEntity.ok()
+                    .headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString()))
+                    .build();
+        } else {
+            throw new BadRequestAlertException(ID_DELETED_OR_NOT_FOUND_MESSAGE, ENTITY_NAME, NOT_FOUND_KEY);
         }
     }
 
@@ -96,5 +95,13 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping(value = "/users/{id}")
+    public Optional<UserDTO> getPostWithId(@PathVariable Long id){
+        if (id == null || id == 0){
+            throw new BadRequestAlertException(USER_POST_NOT_FOUND_MESSAGE, ENTITY_NAME, NOT_FOUND_KEY);
+        }
+        return userService.getUserWithId(id);
     }
 }
